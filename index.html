@@ -3,408 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>V-BLOCKER</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div id="game">
-
     <div id="crt">
-
         <div id="screen">
 
-            <!-- ========================= -->
-            <!-- START SCREEN -->
-            <!-- ========================= -->
-
+            <!-- START -->
             <section id="startScene" class="scene active">
-
                 <div class="center-card">
-
-                    <div class="small-label">
-                        V-BLOCKER SYSTEMS
-                    </div>
-
-                    <h1 class="vblocker-logo">
-                        V-BLOCKER
-                    </h1>
-
-                    <p class="subheading">
-                        REMOTE EMPLOYEE TRAINING SYSTEM
-                    </p>
-
+                    <div class="small-label">V-BLOCKER SYSTEMS</div>
+                    <h1 class="vblocker-logo">V-BLOCKER</h1>
+                    <p class="subheading">REMOTE EMPLOYEE TRAINING SYSTEM</p>
                     <p class="copyright">
                         PROPERTY OF V-BLOCKER TECHNOLOGIES<br>
                         AUTHORIZED PERSONNEL ONLY
                     </p>
-
-                    <button id="startButton">
-                        BEGIN TRAINING
-                    </button>
-
+                    <button id="startButton">BEGIN TRAINING</button>
                 </div>
-
             </section>
 
-
-            <!-- ========================= -->
-            <!-- TRAINING TAPE -->
-            <!-- ========================= -->
-
+            <!-- TRAINING -->
             <section id="trainingScene" class="scene">
-
                 <div class="training-header">
-
-                    <span>
-                        V-BLOCKER SYSTEMS
-                    </span>
-
-                    <span id="trainingCounter">
-                        TAPE 01
-                    </span>
-
+                    <span>V-BLOCKER SYSTEMS</span>
+                    <span id="trainingCounter">TAPE 01</span>
                 </div>
 
-
-                <div id="trainingCard">
-
-                    <!-- Filled by JavaScript -->
-
-                </div>
-
+                <div id="trainingCard"></div>
 
                 <div class="training-footer">
-
-                    <span>
-                        REMOTE CONTAMINATION RESPONSE TRAINING
-                    </span>
-
-                    <button id="continueButton">
-                        CONTINUE
-                    </button>
-
+                    <span>REMOTE CONTAMINATION RESPONSE TRAINING</span>
+                    <button id="continueButton">CONTINUE</button>
                 </div>
-
             </section>
 
-
-            <!-- ========================= -->
             <!-- DESKTOP -->
-            <!-- ========================= -->
-
             <section id="desktopScene" class="scene">
-
                 <div id="desktopWallpaper">
-
                     <div class="desktop-logo">
-
-                        <div class="shield">
-                            V
-                        </div>
-
-                        <div>
-                            V-BLOCKER
-                        </div>
-
-                        <small>
-                            SECURE HOME WORKSTATION
-                        </small>
-
+                        <div class="shield">V</div>
+                        <div>V-BLOCKER</div>
+                        <small>SECURE HOME WORKSTATION</small>
                     </div>
-
                 </div>
-
-
-                <!-- DESKTOP ICONS -->
 
                 <div class="desktop-icons">
-
                     <button class="desktop-icon" id="vBlockerIcon">
-
-                        <div class="icon-box">
-                            V
-                        </div>
-
-                        <span>
-                            V-Blocker
-                        </span>
-
+                        <div class="icon-box">V</div>
+                        <span>V-Blocker</span>
                     </button>
-
 
                     <button class="desktop-icon" id="mailIcon">
-
-                        <div class="icon-box">
-                            ✉
-                        </div>
-
-                        <span>
-                            Threat Queue
-                        </span>
-
+                        <div class="icon-box">✉</div>
+                        <span>Threat Queue</span>
                     </button>
-
 
                     <button class="desktop-icon">
-
-                        <div class="icon-box">
-                            ▣
-                        </div>
-
-                        <span>
-                            My Computer
-                        </span>
-
+                        <div class="icon-box">▣</div>
+                        <span>My Computer</span>
                     </button>
-
                 </div>
-
-
-                <!-- INITIAL ALERT -->
 
                 <div id="newThreatAlert" class="system-alert hidden">
-
-                    <strong>
-                        V-BLOCKER SECURITY
-                    </strong>
-
-                    <p>
-                        1 suspicious file is awaiting manual review.
-                    </p>
-
-                    <button id="reviewThreatButton">
-                        REVIEW
-                    </button>
-
+                    <strong>V-BLOCKER SECURITY</strong>
+                    <p>1 suspicious file is awaiting manual review.</p>
+                    <button id="reviewThreatButton">REVIEW</button>
                 </div>
 
-
-                <!-- THREAT QUEUE WINDOW -->
-
+                <!-- THREAT WINDOW -->
                 <div id="threatWindow" class="window hidden">
-
                     <div class="window-titlebar">
-
-                        <span>
-                            V-BLOCKER - MANUAL REVIEW
-                        </span>
-
-                        <button class="window-x" id="closeThreatWindow">
-                            ×
-                        </button>
-
+                        <span>V-BLOCKER - MANUAL REVIEW</span>
+                        <button class="window-x" id="closeThreatWindow">×</button>
                     </div>
-
 
                     <div class="window-content">
-
-                        <h2>
-                            INCOMING FILE
-                        </h2>
+                        <h2>INCOMING FILE</h2>
 
                         <div class="file-card">
-
-                            <div class="file-icon">
-                                IMG
-                            </div>
-
+                            <div class="file-icon">IMG</div>
                             <div>
-
-                                <strong>
-                                    IMG_0381.JPG
-                                </strong>
-
-                                <p>
-                                    Source: External Submission Queue
-                                </p>
-
-                                <p>
-                                    Size: 2.18 MB
-                                </p>
-
+                                <strong>IMG_0381.JPG</strong>
+                                <p>Source: External Submission Queue</p>
+                                <p>Size: 2.18 MB</p>
                             </div>
-
                         </div>
-
 
                         <div id="scanStatus">
-
-                            <p>
-                                File has not been scanned.
-                            </p>
-
+                            <p>File has not been scanned.</p>
                         </div>
-
 
                         <div class="window-buttons">
-
-                            <button id="scanButton">
-                                SCAN FILE
-                            </button>
-
-                            <button id="inspectButton" disabled>
-                                VISUAL INSPECTION
-                            </button>
-
+                            <button id="scanButton">SCAN FILE</button>
+                            <button id="inspectButton" disabled>VISUAL INSPECTION</button>
                         </div>
-
                     </div>
-
                 </div>
 
-
-                <!-- MEDIA VIEWER -->
-
+                <!-- MEDIA WINDOW -->
                 <div id="mediaWindow" class="window media-window hidden">
-
                     <div class="window-titlebar danger-title">
-
                         <div class="fake-tab">
-
-                            <span>
-                                IMG_0381.JPG
-                            </span>
-
-                            <button id="closeMediaButton" class="tab-close">
-                                ×
-                            </button>
-
+                            <span>IMG_0381.JPG</span>
+                            <button id="closeMediaButton" class="tab-close">×</button>
                         </div>
-
                     </div>
-
 
                     <div id="mediaViewer">
-
-                        <div class="camera-label">
-                            IMAGE PREVIEW
-                        </div>
-
+                        <div class="camera-label">IMAGE PREVIEW</div>
 
                         <div class="fake-room">
-
                             <div class="fake-wall-line line-one"></div>
                             <div class="fake-wall-line line-two"></div>
-
                             <div class="fake-door"></div>
 
-                            <!-- PLACEHOLDER LOCUST FIGURE -->
-
+                            <!-- CREEPIER FIGURE -->
                             <div id="figure">
 
+                                <div class="figure-neck"></div>
+
                                 <div class="figure-head">
-
-                                    <div class="figure-eye left-eye"></div>
-                                    <div class="figure-eye right-eye"></div>
-
-                                    <div class="figure-smile"></div>
-
+                                    <div class="face-mask">
+                                        <div class="figure-eye left-eye"></div>
+                                        <div class="figure-eye right-eye"></div>
+                                        <div class="figure-smile"></div>
+                                    </div>
                                 </div>
 
-                                <div class="figure-body"></div>
+                                <div class="figure-torso"></div>
+                                <div class="figure-hip"></div>
 
-                                <div class="figure-arm left-arm"></div>
-                                <div class="figure-arm right-arm"></div>
+                                <div class="figure-arm left-upper-arm"></div>
+                                <div class="figure-arm right-upper-arm"></div>
+
+                                <div class="figure-forearm left-forearm"></div>
+                                <div class="figure-forearm right-forearm"></div>
+
+                                <div class="figure-leg left-leg"></div>
+                                <div class="figure-leg right-leg"></div>
 
                             </div>
-
                         </div>
 
-
-                        <div id="corruption">
-
-                            SIGNAL STABLE
-
-                        </div>
-
+                        <div id="corruption">SIGNAL STABLE</div>
                     </div>
-
-
-                    <!-- FALSE WARNING -->
 
                     <div id="falseWarning" class="false-warning hidden">
-
-                        <div class="warning-symbol">
-                            !
-                        </div>
-
+                        <div class="warning-symbol">!</div>
                         <div>
-
-                            <strong>
-                                VISUAL THREAT DETECTED
-                            </strong>
-
-                            <p id="warningMessage">
-                                DO NOT CLOSE THIS TAB.
-                            </p>
-
+                            <strong>VISUAL THREAT DETECTED</strong>
+                            <p id="warningMessage">DO NOT CLOSE THIS TAB.</p>
                         </div>
-
                     </div>
-
                 </div>
-
-
-                <!-- TOAST -->
 
                 <div id="toast" class="toast hidden"></div>
 
-
-                <!-- TASKBAR -->
-
                 <div id="taskbar">
-
                     <button class="start-menu-button">
                         V
-                        <span>
-                            Start
-                        </span>
+                        <span>Start</span>
                     </button>
 
-
-                    <div id="taskbarStatus">
-                        V-BLOCKER ACTIVE
-                    </div>
-
-
-                    <div id="clock">
-                        10:00 PM
-                    </div>
-
+                    <div id="taskbarStatus">V-BLOCKER ACTIVE</div>
+                    <div id="clock">10:00 PM</div>
                 </div>
-
             </section>
 
-
-            <!-- FAILURE / STATIC -->
-
+            <!-- STATIC -->
             <div id="staticOverlay" class="hidden">
-
-                <div id="staticText">
-                    CONNECTION LOST
-                </div>
-
+                <div id="staticText">CONNECTION LOST</div>
             </div>
 
-
-            <!-- CRT EFFECTS -->
-
+            <!-- CRT FX -->
             <div class="scanlines"></div>
             <div class="screen-glare"></div>
             <div class="vignette"></div>
-
         </div>
-
     </div>
-
 </div>
 
-
 <script src="game.js"></script>
-
 </body>
 </html>
