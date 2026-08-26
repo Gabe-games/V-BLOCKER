@@ -132,12 +132,12 @@ let voicePlaying = false;
 
 
 // ==========================================================
-// REAL VOICE FILE
+// NO CALLER ID REAL VOICE
 // ==========================================================
 
 const watchingYouVoice =
     new Audio(
-        "assets/audio/im-watching-you.mp3"
+        "assets/audio/im-watching-you.m4a"
     );
 
 
@@ -146,7 +146,15 @@ watchingYouVoice.preload =
 
 
 watchingYouVoice.volume =
-    0.92;
+    1.0;
+
+
+// Web Audio nodes used to boost the recording louder
+// than the normal HTML audio volume limit.
+
+let watchingYouVoiceSource = null;
+
+let watchingYouVoiceGain = null;
 
 
 // ==========================================================
@@ -421,20 +429,65 @@ const trainingSlides = [
 
 function setupAudio() {
 
-    if (
-        audioContext
-    ) {
+    if (!audioContext) {
 
-        return;
+        audioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
 
     }
 
 
-    audioContext =
-        new (
-            window.AudioContext ||
-            window.webkitAudioContext
-        )();
+    if (
+        audioContext.state === "suspended"
+    ) {
+
+        audioContext.resume();
+
+    }
+
+
+    // Only create this ONCE.
+    // Browsers do not let one audio element
+    // become multiple media element sources.
+
+    if (!watchingYouVoiceSource) {
+
+        watchingYouVoiceSource =
+            audioContext.createMediaElementSource(
+                watchingYouVoice
+            );
+
+
+        watchingYouVoiceGain =
+            audioContext.createGain();
+
+
+        // ==================================================
+        // VOICE VOLUME BOOST
+        //
+        // 1.0 = original volume
+        // 1.4 = louder
+        // 1.7 = current setting
+        // 2.0 = VERY loud
+        // ==================================================
+
+        watchingYouVoiceGain.gain.value =
+            1.7;
+
+
+        watchingYouVoiceSource.connect(
+            watchingYouVoiceGain
+        );
+
+
+        watchingYouVoiceGain.connect(
+            audioContext.destination
+        );
+
+    }
 
 }
 
@@ -450,9 +503,7 @@ function beep(
     type = "square"
 ) {
 
-    if (
-        !audioContext
-    ) {
+    if (!audioContext) {
 
         return;
 
@@ -584,14 +635,12 @@ function notificationTone() {
 
 
 // ==========================================================
-// THUMP
+// LOW THUMP
 // ==========================================================
 
 function lowThump() {
 
-    if (
-        !audioContext
-    ) {
+    if (!audioContext) {
 
         return;
 
@@ -682,9 +731,7 @@ function playBreath(
     setTimeout(
         () => {
 
-            if (
-                !audioContext
-            ) {
+            if (!audioContext) {
 
                 return;
 
@@ -821,7 +868,7 @@ function playBreath(
 
 
 // ==========================================================
-// CREEPY BREATHING SEQUENCE
+// BREATHING SEQUENCE
 // ==========================================================
 
 function creepyBreathing() {
@@ -847,14 +894,12 @@ function creepyBreathing() {
 
 
 // ==========================================================
-// PLAY REAL WATCHING YOU AUDIO
+// PLAY REAL "I'M WATCHING YOU" RECORDING
 // ==========================================================
 
 async function playWatchingYouVoice() {
 
-    if (
-        !phoneAnswered
-    ) {
+    if (!phoneAnswered) {
 
         return;
 
@@ -865,45 +910,46 @@ async function playWatchingYouVoice() {
         true;
 
 
+    watchingYouVoice.pause();
+
+
     watchingYouVoice.currentTime =
         0;
+
+
+    watchingYouVoice.onended =
+        () => {
+
+            voicePlaying =
+                false;
+
+
+            setTimeout(
+                disconnectCall,
+                450
+            );
+
+        };
 
 
     try {
 
         await watchingYouVoice.play();
 
-
-        watchingYouVoice.onended =
-            () => {
-
-                voicePlaying =
-                    false;
-
-
-                setTimeout(
-                    disconnectCall,
-                    450
-                );
-
-            };
-
     }
 
 
-    catch (
-        error
-    ) {
+    catch (error) {
 
-        /*
-            Audio file is missing.
+        console.warn(
+            "No Caller ID voice could not play:",
+            error
+        );
 
-            DO NOT use browser TTS.
 
-            Just make the call creepier
-            with another breath and hang up.
-        */
-
+        // NO ROBOT TTS FALLBACK.
+        // If the recording fails, he just breathes
+        // one more time and hangs up.
 
         voicePlaying =
             false;
@@ -956,7 +1002,7 @@ function showScene(
 
 
 // ==========================================================
-// START BUTTON
+// START
 // ==========================================================
 
 startButton.addEventListener(
@@ -982,7 +1028,7 @@ startButton.addEventListener(
 
 
 // ==========================================================
-// SHOW TRAINING SLIDE
+// TRAINING
 // ==========================================================
 
 function showTrainingSlide() {
@@ -1032,9 +1078,7 @@ function showTrainingSlide() {
                     );
 
 
-                if (
-                    !virusWord
-                ) {
+                if (!virusWord) {
 
                     return;
 
@@ -1051,9 +1095,7 @@ function showTrainingSlide() {
                 setTimeout(
                     () => {
 
-                        if (
-                            virusWord
-                        ) {
+                        if (virusWord) {
 
                             virusWord.textContent =
                                 "VIRUS";
@@ -1082,7 +1124,7 @@ function showTrainingSlide() {
 
 
 // ==========================================================
-// TRAINING CONTINUE
+// CONTINUE TRAINING
 // ==========================================================
 
 continueButton.addEventListener(
@@ -1159,7 +1201,7 @@ function beginShift() {
 
 
 // ==========================================================
-// OPEN THREAT QUEUE
+// THREAT QUEUE
 // ==========================================================
 
 function openThreatQueue() {
@@ -1205,7 +1247,7 @@ closeThreatWindow.addEventListener(
 
 
 // ==========================================================
-// SCAN FILE
+// SCAN
 // ==========================================================
 
 scanButton.addEventListener(
@@ -1293,7 +1335,7 @@ scanButton.addEventListener(
 
 
 // ==========================================================
-// SCAN COMPLETE
+// SCAN FINISHED
 // ==========================================================
 
 function finishScan() {
@@ -1366,7 +1408,7 @@ inspectButton.addEventListener(
 
 
 // ==========================================================
-// CLEAR ENCOUNTER TIMERS
+// ENCOUNTER TIMER CLEANUP
 // ==========================================================
 
 function clearEncounterTimers() {
@@ -1389,7 +1431,7 @@ function clearEncounterTimers() {
 
 
 // ==========================================================
-// CLEAR FIGURE STAGES
+// FIGURE STAGE CLEANUP
 // ==========================================================
 
 function clearFigureStages() {
@@ -1417,9 +1459,7 @@ function glitchJump(
     stage
 ) {
 
-    if (
-        !encounterActive
-    ) {
+    if (!encounterActive) {
 
         return;
 
@@ -1437,9 +1477,7 @@ function glitchJump(
     setTimeout(
         () => {
 
-            if (
-                !encounterActive
-            ) {
+            if (!encounterActive) {
 
                 return;
 
@@ -1476,7 +1514,7 @@ function glitchJump(
 
 
 // ==========================================================
-// BEGIN ENCOUNTER
+// BEGIN NO CALLER ID ENCOUNTER
 // ==========================================================
 
 function beginEncounter() {
@@ -1508,20 +1546,16 @@ function beginEncounter() {
         "CAMERA FEED STABLE";
 
 
-    /*
-        Player initially gets time
-        to notice him far in the image.
-    */
-
+    // ------------------------------------------------------
+    // PLAYER HAS TIME TO NOTICE HIM
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
         setTimeout(
             () => {
 
-                if (
-                    !encounterActive
-                ) {
+                if (!encounterActive) {
 
                     return;
 
@@ -1538,10 +1572,9 @@ function beginEncounter() {
     );
 
 
-    /*
-        First glitch jump.
-    */
-
+    // ------------------------------------------------------
+    // FIRST GLITCH
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
@@ -1563,19 +1596,16 @@ function beginEncounter() {
     );
 
 
-    /*
-        Fake V-BLOCKER warning.
-    */
-
+    // ------------------------------------------------------
+    // FAKE WARNING
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
         setTimeout(
             () => {
 
-                if (
-                    !encounterActive
-                ) {
+                if (!encounterActive) {
 
                     return;
 
@@ -1600,10 +1630,9 @@ function beginEncounter() {
     );
 
 
-    /*
-        Second jump.
-    */
-
+    // ------------------------------------------------------
+    // SECOND GLITCH
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
@@ -1629,10 +1658,9 @@ function beginEncounter() {
     );
 
 
-    /*
-        PHONE RINGS
-    */
-
+    // ------------------------------------------------------
+    // PHONE RINGS
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
@@ -1654,10 +1682,9 @@ function beginEncounter() {
     );
 
 
-    /*
-        Third jump.
-    */
-
+    // ------------------------------------------------------
+    // THIRD GLITCH
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
@@ -1683,19 +1710,16 @@ function beginEncounter() {
     );
 
 
-    /*
-        Warning no longer sounds corporate.
-    */
-
+    // ------------------------------------------------------
+    // WARNING STARTS SOUNDING WRONG
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
         setTimeout(
             () => {
 
-                if (
-                    !encounterActive
-                ) {
+                if (!encounterActive) {
 
                     return;
 
@@ -1716,10 +1740,9 @@ function beginEncounter() {
     );
 
 
-    /*
-        Final approach.
-    */
-
+    // ------------------------------------------------------
+    // FINAL APPROACH
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
@@ -1745,10 +1768,9 @@ function beginEncounter() {
     );
 
 
-    /*
-        Failure if they wait.
-    */
-
+    // ------------------------------------------------------
+    // FAILURE
+    // ------------------------------------------------------
 
     encounterTimers.push(
 
@@ -1773,7 +1795,7 @@ function beginEncounter() {
 
 
 // ==========================================================
-// PHONE RING
+// PHONE RINGS
 // ==========================================================
 
 function startIncomingCall() {
@@ -1822,14 +1844,12 @@ function startIncomingCall() {
 
 
 // ==========================================================
-// RING SOUND
+// PHONE RING SOUND
 // ==========================================================
 
 function playRing() {
 
-    if (
-        !phoneRinging
-    ) {
+    if (!phoneRinging) {
 
         return;
 
@@ -1847,9 +1867,7 @@ function playRing() {
     setTimeout(
         () => {
 
-            if (
-                !phoneRinging
-            ) {
+            if (!phoneRinging) {
 
                 return;
 
@@ -1878,13 +1896,14 @@ answerButton.addEventListener(
     "click",
     () => {
 
-        if (
-            !phoneRinging
-        ) {
+        if (!phoneRinging) {
 
             return;
 
         }
+
+
+        setupAudio();
 
 
         phoneRinging =
@@ -1920,20 +1939,16 @@ answerButton.addEventListener(
         phoneClick();
 
 
-        /*
-            Loud breathing first.
-        */
-
+        // --------------------------------------------------
+        // BREATHING
+        // --------------------------------------------------
 
         creepyBreathing();
 
 
-        /*
-            THEN real recorded voice.
-
-            NO text-to-speech.
-        */
-
+        // --------------------------------------------------
+        // REAL RECORDED VOICE
+        // --------------------------------------------------
 
         setTimeout(
             () => {
@@ -2023,7 +2038,7 @@ function disconnectCall() {
 
 
 // ==========================================================
-// PLAYER CLOSES MEDIA TAB
+// CLOSE MEDIA TAB
 // ==========================================================
 
 closeMediaButton.addEventListener(
