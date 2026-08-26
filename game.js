@@ -1,12 +1,12 @@
-// ======================================================
+// ==========================================================
 // V-BLOCKER
 // NO CALLER ID PROTOTYPE
-// ======================================================
+// ==========================================================
 
 
-// ======================================================
+// ==========================================================
 // ELEMENTS
-// ======================================================
+// ==========================================================
 
 const startScene =
     document.getElementById("startScene");
@@ -96,6 +96,7 @@ const answerButton =
 const toast =
     document.getElementById("toast");
 
+
 const staticOverlay =
     document.getElementById("staticOverlay");
 
@@ -103,9 +104,13 @@ const staticText =
     document.getElementById("staticText");
 
 
-// ======================================================
+const taskbarStatus =
+    document.getElementById("taskbarStatus");
+
+
+// ==========================================================
 // STATE
-// ======================================================
+// ==========================================================
 
 let trainingIndex = 0;
 
@@ -123,10 +128,30 @@ let ringTimer = null;
 
 let toastTimer = null;
 
+let voicePlaying = false;
 
-// ======================================================
-// TRAINING
-// ======================================================
+
+// ==========================================================
+// REAL VOICE FILE
+// ==========================================================
+
+const watchingYouVoice =
+    new Audio(
+        "assets/audio/im-watching-you.mp3"
+    );
+
+
+watchingYouVoice.preload =
+    "auto";
+
+
+watchingYouVoice.volume =
+    0.92;
+
+
+// ==========================================================
+// TRAINING SLIDES
+// ==========================================================
 
 const trainingSlides = [
 
@@ -160,10 +185,13 @@ const trainingSlides = [
         `
             <p class="training-text">
 
-                Some malicious files may contain
-                images or recordings that cannot be
-                identified by conventional antivirus
-                software.
+                Certain submitted images,
+                video recordings,
+                or surveillance captures
+
+                may contain visual anomalies
+                that cannot be identified by
+                conventional antivirus software.
 
                 <br><br>
 
@@ -196,11 +224,11 @@ const trainingSlides = [
 
                     <br>
 
-                    • Do not communicate with the figure.
+                    • Do not attempt communication.
 
                     <br>
 
-                    • Observe its behavior carefully.
+                    • Observe the figure carefully.
 
                 </div>
 
@@ -231,7 +259,7 @@ const trainingSlides = [
 
                     <br>
 
-                    2. Do not reopen the file.
+                    2. Do not reopen the media.
 
                     <br>
 
@@ -258,22 +286,61 @@ const trainingSlides = [
 
                 <div class="rule-list">
 
-                    During an active visual threat,
-                    employees may receive calls from
-                    unidentified numbers.
+                    During an active visual incident,
+
+                    employees may receive
+                    unidentified telephone calls.
 
                     <br><br>
 
-                    V-BLOCKER will never ask an employee
-                    to answer an unidentified call.
+                    V-BLOCKER will never instruct
+                    an employee to answer
+                    an unidentified caller.
 
                     <br><br>
 
-                    Caller information may be inaccurate.
+                    Caller information may be false.
 
                 </div>
 
             </div>
+        `
+    },
+
+
+    {
+        title:
+            "AUDIO CONTAMINATION",
+
+        html:
+        `
+            <p class="training-text">
+
+                Employees have reported:
+
+                <br><br>
+
+                breathing,
+
+                <br>
+
+                whispering,
+
+                <br>
+
+                background noise matching
+                the employee residence,
+
+                <br>
+
+                and voices addressing
+                the employee directly.
+
+                <br><br>
+
+                Do not respond.
+
+            </p>
         `
     },
 
@@ -314,15 +381,18 @@ const trainingSlides = [
         `
             <p class="training-text">
 
-                EMPLOYEE: 047
+                EMPLOYEE:
+                047
 
                 <br>
 
-                TERMINAL: HOME-047
+                TERMINAL:
+                HOME-047
 
                 <br>
 
-                SHIFT START: 10:00 PM
+                SHIFT START:
+                10:00 PM
 
                 <br><br><br>
 
@@ -345,24 +415,33 @@ const trainingSlides = [
 ];
 
 
-// ======================================================
-// AUDIO
-// ======================================================
+// ==========================================================
+// AUDIO SETUP
+// ==========================================================
 
 function setupAudio() {
 
-    if (!audioContext) {
+    if (
+        audioContext
+    ) {
 
-        audioContext =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
+        return;
 
     }
 
+
+    audioContext =
+        new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+
 }
 
+
+// ==========================================================
+// BASIC BEEP
+// ==========================================================
 
 function beep(
     frequency = 400,
@@ -371,8 +450,13 @@ function beep(
     type = "square"
 ) {
 
-    if (!audioContext)
+    if (
+        !audioContext
+    ) {
+
         return;
+
+    }
 
 
     const oscillator =
@@ -421,6 +505,10 @@ function beep(
 }
 
 
+// ==========================================================
+// TRAINING TONE
+// ==========================================================
+
 function trainingTone() {
 
     beep(
@@ -448,6 +536,10 @@ function trainingTone() {
 }
 
 
+// ==========================================================
+// ERROR TONE
+// ==========================================================
+
 function errorTone() {
 
     beep(
@@ -459,6 +551,10 @@ function errorTone() {
 
 }
 
+
+// ==========================================================
+// NOTIFICATION
+// ==========================================================
 
 function notificationTone() {
 
@@ -487,10 +583,19 @@ function notificationTone() {
 }
 
 
+// ==========================================================
+// THUMP
+// ==========================================================
+
 function lowThump() {
 
-    if (!audioContext)
+    if (
+        !audioContext
+    ) {
+
         return;
+
+    }
 
 
     const oscillator =
@@ -549,21 +654,52 @@ function lowThump() {
 }
 
 
-// ======================================================
-// BREATHING
-// ======================================================
+// ==========================================================
+// PHONE CLICK
+// ==========================================================
 
-function playBreath(delay = 0) {
+function phoneClick() {
+
+    beep(
+        190,
+        .05,
+        .025,
+        "square"
+    );
+
+}
+
+
+// ==========================================================
+// BREATH SOUND
+// ==========================================================
+
+function playBreath(
+    delay = 0,
+    strength = .18
+) {
 
     setTimeout(
         () => {
 
-            if (!audioContext)
+            if (
+                !audioContext
+            ) {
+
                 return;
+
+            }
+
+
+            const duration =
+                1.25;
 
 
             const bufferSize =
-                audioContext.sampleRate * 1.2;
+                Math.floor(
+                    audioContext.sampleRate *
+                    duration
+                );
 
 
             const buffer =
@@ -598,16 +734,28 @@ function playBreath(delay = 0) {
                 buffer;
 
 
-            const filter =
+            const lowPass =
                 audioContext.createBiquadFilter();
 
 
-            filter.type =
+            lowPass.type =
                 "lowpass";
 
 
-            filter.frequency.value =
-                520;
+            lowPass.frequency.value =
+                620;
+
+
+            const highPass =
+                audioContext.createBiquadFilter();
+
+
+            highPass.type =
+                "highpass";
+
+
+            highPass.frequency.value =
+                100;
 
 
             const gain =
@@ -621,29 +769,34 @@ function playBreath(delay = 0) {
 
 
             gain.gain.linearRampToValueAtTime(
-                .20,
-                audioContext.currentTime + .28
+                strength,
+                audioContext.currentTime + .25
             );
 
 
             gain.gain.linearRampToValueAtTime(
-                .06,
+                strength * .42,
                 audioContext.currentTime + .72
             );
 
 
             gain.gain.linearRampToValueAtTime(
                 .001,
-                audioContext.currentTime + 1.1
+                audioContext.currentTime + 1.18
             );
 
 
             noise.connect(
-                filter
+                highPass
             );
 
 
-            filter.connect(
+            highPass.connect(
+                lowPass
+            );
+
+
+            lowPass.connect(
                 gain
             );
 
@@ -657,7 +810,7 @@ function playBreath(delay = 0) {
 
 
             noise.stop(
-                audioContext.currentTime + 1.15
+                audioContext.currentTime + duration
             );
 
         },
@@ -667,120 +820,131 @@ function playBreath(delay = 0) {
 }
 
 
+// ==========================================================
+// CREEPY BREATHING SEQUENCE
+// ==========================================================
+
 function creepyBreathing() {
 
     playBreath(
-        0
+        0,
+        .22
     );
 
 
     playBreath(
-        1150
+        1250,
+        .20
     );
 
 
     playBreath(
-        2300
+        2550,
+        .24
     );
 
 }
 
 
-// ======================================================
-// VOICE
-// ======================================================
+// ==========================================================
+// PLAY REAL WATCHING YOU AUDIO
+// ==========================================================
 
-function speakWatchingYou() {
+async function playWatchingYouVoice() {
 
     if (
-        !window.speechSynthesis
+        !phoneAnswered
     ) {
-
-        phoneDisplay.textContent =
-            "CALL ENDED";
 
         return;
 
     }
 
 
-    speechSynthesis.cancel();
+    voicePlaying =
+        true;
 
 
-    const speech =
-        new SpeechSynthesisUtterance(
-            "I'm watching you..."
-        );
+    watchingYouVoice.currentTime =
+        0;
 
 
-    speech.rate =
-        .72;
+    try {
+
+        await watchingYouVoice.play();
 
 
-    speech.pitch =
-        .65;
+        watchingYouVoice.onended =
+            () => {
+
+                voicePlaying =
+                    false;
 
 
-    speech.volume =
-        .82;
+                setTimeout(
+                    disconnectCall,
+                    450
+                );
 
-
-    const voices =
-        speechSynthesis.getVoices();
-
-
-    const englishVoice =
-        voices.find(
-            voice =>
-                voice.lang
-                    .toLowerCase()
-                    .startsWith("en")
-        );
-
-
-    if (
-        englishVoice
-    ) {
-
-        speech.voice =
-            englishVoice;
+            };
 
     }
 
 
-    speech.onend =
-        () => {
+    catch (
+        error
+    ) {
 
-            setTimeout(
-                disconnectCall,
-                500
-            );
+        /*
+            Audio file is missing.
 
-        };
+            DO NOT use browser TTS.
+
+            Just make the call creepier
+            with another breath and hang up.
+        */
 
 
-    speechSynthesis.speak(
-        speech
-    );
+        voicePlaying =
+            false;
+
+
+        playBreath(
+            0,
+            .26
+        );
+
+
+        setTimeout(
+            disconnectCall,
+            1750
+        );
+
+    }
 
 }
 
 
-// ======================================================
-// SCENES
-// ======================================================
+// ==========================================================
+// SCENE CONTROL
+// ==========================================================
 
-function showScene(scene) {
+function showScene(
+    scene
+) {
 
     document
         .querySelectorAll(
             ".scene"
         )
         .forEach(
-            scene =>
-                scene.classList.remove(
+            item => {
+
+                item.classList.remove(
                     "active"
-                )
+                );
+
+            }
         );
 
 
@@ -791,9 +955,9 @@ function showScene(scene) {
 }
 
 
-// ======================================================
-// START
-// ======================================================
+// ==========================================================
+// START BUTTON
+// ==========================================================
 
 startButton.addEventListener(
     "click",
@@ -817,9 +981,9 @@ startButton.addEventListener(
 );
 
 
-// ======================================================
-// TRAINING SLIDES
-// ======================================================
+// ==========================================================
+// SHOW TRAINING SLIDE
+// ==========================================================
 
 function showTrainingSlide() {
 
@@ -862,17 +1026,22 @@ function showTrainingSlide() {
         setTimeout(
             () => {
 
-                const word =
+                const virusWord =
                     document.getElementById(
                         "virusWord"
                     );
 
 
-                if (!word)
+                if (
+                    !virusWord
+                ) {
+
                     return;
 
+                }
 
-                word.textContent =
+
+                virusWord.textContent =
                     "HIM";
 
 
@@ -883,10 +1052,10 @@ function showTrainingSlide() {
                     () => {
 
                         if (
-                            word
+                            virusWord
                         ) {
 
-                            word.textContent =
+                            virusWord.textContent =
                                 "VIRUS";
 
                         }
@@ -901,6 +1070,7 @@ function showTrainingSlide() {
 
     }
 
+
     else {
 
         continueButton.textContent =
@@ -910,6 +1080,10 @@ function showTrainingSlide() {
 
 }
 
+
+// ==========================================================
+// TRAINING CONTINUE
+// ==========================================================
 
 continueButton.addEventListener(
     "click",
@@ -944,9 +1118,9 @@ continueButton.addEventListener(
 );
 
 
-// ======================================================
-// SHIFT
-// ======================================================
+// ==========================================================
+// BEGIN SHIFT
+// ==========================================================
 
 function beginShift() {
 
@@ -961,6 +1135,10 @@ function beginShift() {
 
     phoneStatus.textContent =
         "LINE 1";
+
+
+    taskbarStatus.textContent =
+        "V-BLOCKER ACTIVE";
 
 
     setTimeout(
@@ -980,9 +1158,9 @@ function beginShift() {
 }
 
 
-// ======================================================
-// THREAT WINDOW
-// ======================================================
+// ==========================================================
+// OPEN THREAT QUEUE
+// ==========================================================
 
 function openThreatQueue() {
 
@@ -1010,6 +1188,10 @@ mailIcon.addEventListener(
 );
 
 
+// ==========================================================
+// CLOSE THREAT WINDOW
+// ==========================================================
+
 closeThreatWindow.addEventListener(
     "click",
     () => {
@@ -1022,15 +1204,19 @@ closeThreatWindow.addEventListener(
 );
 
 
-// ======================================================
-// SCAN
-// ======================================================
+// ==========================================================
+// SCAN FILE
+// ==========================================================
 
 scanButton.addEventListener(
     "click",
     () => {
 
         scanButton.disabled =
+            true;
+
+
+        inspectButton.disabled =
             true;
 
 
@@ -1106,6 +1292,10 @@ scanButton.addEventListener(
 );
 
 
+// ==========================================================
+// SCAN COMPLETE
+// ==========================================================
+
 function finishScan() {
 
     errorTone();
@@ -1122,12 +1312,17 @@ function finishScan() {
         <br><br>
 
         FILE:
-        IMG_0381.JPG
+        CAM_03_2217.JPG
 
         <br>
 
         SIGNATURE:
         UNKNOWN
+
+        <br>
+
+        ORIGIN:
+        EXTERIOR CAMERA FEED
 
         <br>
 
@@ -1146,9 +1341,9 @@ function finishScan() {
 }
 
 
-// ======================================================
-// ENCOUNTER
-// ======================================================
+// ==========================================================
+// VISUAL INSPECTION
+// ==========================================================
 
 inspectButton.addEventListener(
     "click",
@@ -1170,13 +1365,20 @@ inspectButton.addEventListener(
 );
 
 
+// ==========================================================
+// CLEAR ENCOUNTER TIMERS
+// ==========================================================
+
 function clearEncounterTimers() {
 
     encounterTimers.forEach(
-        timer =>
+        timer => {
+
             clearTimeout(
                 timer
-            )
+            );
+
+        }
     );
 
 
@@ -1185,6 +1387,10 @@ function clearEncounterTimers() {
 
 }
 
+
+// ==========================================================
+// CLEAR FIGURE STAGES
+// ==========================================================
 
 function clearFigureStages() {
 
@@ -1203,11 +1409,13 @@ function clearFigureStages() {
 }
 
 
-// ======================================================
-// GLITCH MOVEMENT
-// ======================================================
+// ==========================================================
+// GLITCH JUMP
+// ==========================================================
 
-function glitchJump(stage) {
+function glitchJump(
+    stage
+) {
 
     if (
         !encounterActive
@@ -1229,6 +1437,15 @@ function glitchJump(stage) {
     setTimeout(
         () => {
 
+            if (
+                !encounterActive
+            ) {
+
+                return;
+
+            }
+
+
             clearFigureStages();
 
 
@@ -1240,7 +1457,7 @@ function glitchJump(stage) {
             lowThump();
 
         },
-        110
+        100
     );
 
 
@@ -1252,15 +1469,15 @@ function glitchJump(stage) {
             );
 
         },
-        350
+        360
     );
 
 }
 
 
-// ======================================================
+// ==========================================================
 // BEGIN ENCOUNTER
-// ======================================================
+// ==========================================================
 
 function beginEncounter() {
 
@@ -1278,13 +1495,23 @@ function beginEncounter() {
         false;
 
 
+    phoneRinging =
+        false;
+
+
     falseWarning.classList.add(
         "hidden"
     );
 
 
     corruption.textContent =
-        "SIGNAL STABLE";
+        "CAMERA FEED STABLE";
+
+
+    /*
+        Player initially gets time
+        to notice him far in the image.
+    */
 
 
     encounterTimers.push(
@@ -1294,18 +1521,26 @@ function beginEncounter() {
 
                 if (
                     !encounterActive
-                )
+                ) {
+
                     return;
+
+                }
 
 
                 corruption.textContent =
-                    "FIGURE DETECTED";
+                    "MOVEMENT DETECTED";
 
             },
-            1800
+            2400
         )
 
     );
+
+
+    /*
+        First glitch jump.
+    */
 
 
     encounterTimers.push(
@@ -1319,13 +1554,18 @@ function beginEncounter() {
 
 
                 corruption.textContent =
-                    "SUBJECT MOVEMENT DETECTED";
+                    "MOVEMENT DETECTED IN FRAME";
 
             },
-            3200
+            3600
         )
 
     );
+
+
+    /*
+        Fake V-BLOCKER warning.
+    */
 
 
     encounterTimers.push(
@@ -1335,8 +1575,11 @@ function beginEncounter() {
 
                 if (
                     !encounterActive
-                )
+                ) {
+
                     return;
+
+                }
 
 
                 falseWarning.classList.remove(
@@ -1351,10 +1594,15 @@ function beginEncounter() {
                 errorTone();
 
             },
-            4300
+            4700
         )
 
     );
+
+
+    /*
+        Second jump.
+    */
 
 
     encounterTimers.push(
@@ -1375,10 +1623,15 @@ function beginEncounter() {
                     "DO NOT INTERRUPT THE CONNECTION.";
 
             },
-            6200
+            6500
         )
 
     );
+
+
+    /*
+        PHONE RINGS
+    */
 
 
     encounterTimers.push(
@@ -1395,10 +1648,15 @@ function beginEncounter() {
                 }
 
             },
-            7200
+            7600
         )
 
     );
+
+
+    /*
+        Third jump.
+    */
 
 
     encounterTimers.push(
@@ -1412,17 +1670,22 @@ function beginEncounter() {
 
 
                 corruption.textContent =
-                    "SOURCE UNKNOWN";
+                    "SUBJECT DISTANCE DECREASING";
 
 
                 warningMessage.textContent =
                     "CLOSING THIS TAB MAY DAMAGE YOUR SYSTEM.";
 
             },
-            9000
+            9700
         )
 
     );
+
+
+    /*
+        Warning no longer sounds corporate.
+    */
 
 
     encounterTimers.push(
@@ -1432,18 +1695,30 @@ function beginEncounter() {
 
                 if (
                     !encounterActive
-                )
+                ) {
+
                     return;
+
+                }
 
 
                 warningMessage.textContent =
                     "PLEASE REMAIN.";
 
+
+                corruption.textContent =
+                    "SOURCE UNKNOWN";
+
             },
-            10800
+            11500
         )
 
     );
+
+
+    /*
+        Final approach.
+    */
 
 
     encounterTimers.push(
@@ -1464,10 +1739,15 @@ function beginEncounter() {
                     "DON'T GO.";
 
             },
-            12400
+            13200
         )
 
     );
+
+
+    /*
+        Failure if they wait.
+    */
 
 
     encounterTimers.push(
@@ -1484,7 +1764,7 @@ function beginEncounter() {
                 }
 
             },
-            15100
+            16100
         )
 
     );
@@ -1492,9 +1772,9 @@ function beginEncounter() {
 }
 
 
-// ======================================================
-// PHONE RINGING
-// ======================================================
+// ==========================================================
+// PHONE RING
+// ==========================================================
 
 function startIncomingCall() {
 
@@ -1535,11 +1815,15 @@ function startIncomingCall() {
     ringTimer =
         setInterval(
             playRing,
-            1500
+            1550
         );
 
 }
 
+
+// ==========================================================
+// RING SOUND
+// ==========================================================
 
 function playRing() {
 
@@ -1554,7 +1838,7 @@ function playRing() {
 
     beep(
         620,
-        .28,
+        .27,
         .055,
         "square"
     );
@@ -1563,9 +1847,18 @@ function playRing() {
     setTimeout(
         () => {
 
+            if (
+                !phoneRinging
+            ) {
+
+                return;
+
+            }
+
+
             beep(
                 510,
-                .3,
+                .29,
                 .055,
                 "square"
             );
@@ -1577,9 +1870,9 @@ function playRing() {
 }
 
 
-// ======================================================
+// ==========================================================
 // ANSWER PHONE
-// ======================================================
+// ==========================================================
 
 answerButton.addEventListener(
     "click",
@@ -1624,7 +1917,22 @@ answerButton.addEventListener(
             "CALL CONNECTED";
 
 
+        phoneClick();
+
+
+        /*
+            Loud breathing first.
+        */
+
+
         creepyBreathing();
+
+
+        /*
+            THEN real recorded voice.
+
+            NO text-to-speech.
+        */
 
 
         setTimeout(
@@ -1634,21 +1942,21 @@ answerButton.addEventListener(
                     phoneAnswered
                 ) {
 
-                    speakWatchingYou();
+                    playWatchingYouVoice();
 
                 }
 
             },
-            3600
+            4100
         );
 
     }
 );
 
 
-// ======================================================
+// ==========================================================
 // DISCONNECT CALL
-// ======================================================
+// ==========================================================
 
 function disconnectCall() {
 
@@ -1657,6 +1965,10 @@ function disconnectCall() {
 
 
     phoneRinging =
+        false;
+
+
+    voicePlaying =
         false;
 
 
@@ -1693,8 +2005,15 @@ function disconnectCall() {
     setTimeout(
         () => {
 
-            phoneDisplay.textContent =
-                "READY";
+            if (
+                !phoneRinging &&
+                !phoneAnswered
+            ) {
+
+                phoneDisplay.textContent =
+                    "READY";
+
+            }
 
         },
         1500
@@ -1703,9 +2022,9 @@ function disconnectCall() {
 }
 
 
-// ======================================================
-// CLOSE TAB
-// ======================================================
+// ==========================================================
+// PLAYER CLOSES MEDIA TAB
+// ==========================================================
 
 closeMediaButton.addEventListener(
     "click",
@@ -1719,6 +2038,7 @@ closeMediaButton.addEventListener(
 
         }
 
+
         else {
 
             mediaWindow.classList.add(
@@ -1731,9 +2051,9 @@ closeMediaButton.addEventListener(
 );
 
 
-// ======================================================
-// SURVIVE
-// ======================================================
+// ==========================================================
+// SURVIVE ENCOUNTER
+// ==========================================================
 
 function surviveEncounter() {
 
@@ -1765,15 +2085,13 @@ function surviveEncounter() {
     clearFigureStages();
 
 
+    taskbarStatus.textContent =
+        "SCANNING SYSTEM...";
+
+
     showToast(
         "THREAT CONTAINED — FULL SYSTEM SCAN STARTED"
     );
-
-
-    document.getElementById(
-        "taskbarStatus"
-    ).textContent =
-        "SCANNING SYSTEM...";
 
 
     beep(
@@ -1810,12 +2128,23 @@ function surviveEncounter() {
         3500
     );
 
+
+    setTimeout(
+        () => {
+
+            taskbarStatus.textContent =
+                "V-BLOCKER ACTIVE";
+
+        },
+        6200
+    );
+
 }
 
 
-// ======================================================
+// ==========================================================
 // STOP PHONE
-// ======================================================
+// ==========================================================
 
 function stopPhone() {
 
@@ -1824,6 +2153,10 @@ function stopPhone() {
 
 
     phoneAnswered =
+        false;
+
+
+    voicePlaying =
         false;
 
 
@@ -1849,20 +2182,18 @@ function stopPhone() {
         "LINE 1";
 
 
-    if (
-        window.speechSynthesis
-    ) {
+    watchingYouVoice.pause();
 
-        speechSynthesis.cancel();
 
-    }
+    watchingYouVoice.currentTime =
+        0;
 
 }
 
 
-// ======================================================
+// ==========================================================
 // FAILURE
-// ======================================================
+// ==========================================================
 
 function encounterFailure() {
 
@@ -1878,6 +2209,11 @@ function encounterFailure() {
 
     falseWarning.classList.add(
         "hidden"
+    );
+
+
+    mediaViewer.classList.remove(
+        "glitching"
     );
 
 
@@ -1897,10 +2233,10 @@ function encounterFailure() {
         () => {
 
             staticText.textContent =
-                "VISUAL CONTACT FAILED";
+                "CAMERA 03 OFFLINE";
 
         },
-        1300
+        1200
     );
 
 
@@ -1908,10 +2244,20 @@ function encounterFailure() {
         () => {
 
             staticText.textContent =
-                "CHECK YOUR FRONT DOOR";
+                "NO SIGNAL";
 
         },
-        2500
+        2200
+    );
+
+
+    setTimeout(
+        () => {
+
+            lowThump();
+
+        },
+        2900
     );
 
 
@@ -1928,15 +2274,13 @@ function encounterFailure() {
             );
 
 
+            taskbarStatus.textContent =
+                "CONNECTION ERROR";
+
+
             showToast(
                 "V-BLOCKER HAS ENCOUNTERED AN UNKNOWN ERROR"
             );
-
-
-            document.getElementById(
-                "taskbarStatus"
-            ).textContent =
-                "CONNECTION ERROR";
 
         },
         3900
@@ -1945,9 +2289,9 @@ function encounterFailure() {
 }
 
 
-// ======================================================
+// ==========================================================
 // TOAST
-// ======================================================
+// ==========================================================
 
 function showToast(
     message
