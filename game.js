@@ -135,9 +135,17 @@ let voicePlaying = false;
 // NO CALLER ID REAL VOICE
 // ==========================================================
 
+// IMPORTANT:
+//
+// Your recording is currently here:
+//
+// assets/im-watching-you.m4a
+//
+// NOT inside assets/audio/
+
 const watchingYouVoice =
     new Audio(
-        "assets/audio/im-watching-you.m4a"
+        "assets/im-watching-you.m4a"
     );
 
 
@@ -149,8 +157,8 @@ watchingYouVoice.volume =
     1.0;
 
 
-// Web Audio nodes used to boost the recording louder
-// than the normal HTML audio volume limit.
+// Web Audio nodes for boosting the recording
+// above normal HTML audio volume.
 
 let watchingYouVoiceSource = null;
 
@@ -449,9 +457,9 @@ function setupAudio() {
     }
 
 
-    // Only create this ONCE.
-    // Browsers do not let one audio element
-    // become multiple media element sources.
+    // Only create this once.
+    // A media element can only be attached
+    // to one MediaElementSource.
 
     if (!watchingYouVoiceSource) {
 
@@ -466,12 +474,12 @@ function setupAudio() {
 
 
         // ==================================================
-        // VOICE VOLUME BOOST
+        // RECORDING VOLUME BOOST
         //
-        // 1.0 = original volume
+        // 1.0 = original recording
         // 1.4 = louder
-        // 1.7 = current setting
-        // 2.0 = VERY loud
+        // 1.7 = current
+        // 2.0 = very loud
         // ==================================================
 
         watchingYouVoiceGain.gain.value =
@@ -947,9 +955,9 @@ async function playWatchingYouVoice() {
         );
 
 
-        // NO ROBOT TTS FALLBACK.
-        // If the recording fails, he just breathes
-        // one more time and hangs up.
+        // NO GOOFY ROBOT VOICE FALLBACK 💀
+        // If the recording fails, he breathes
+        // once more and hangs up.
 
         voicePlaying =
             false;
@@ -1573,7 +1581,7 @@ function beginEncounter() {
 
 
     // ------------------------------------------------------
-    // FIRST GLITCH
+    // FIRST GLITCH JUMP
     // ------------------------------------------------------
 
     encounterTimers.push(
@@ -1597,7 +1605,7 @@ function beginEncounter() {
 
 
     // ------------------------------------------------------
-    // FAKE WARNING
+    // FAKE V-BLOCKER WARNING
     // ------------------------------------------------------
 
     encounterTimers.push(
@@ -1631,7 +1639,7 @@ function beginEncounter() {
 
 
     // ------------------------------------------------------
-    // SECOND GLITCH
+    // SECOND GLITCH JUMP
     // ------------------------------------------------------
 
     encounterTimers.push(
@@ -1940,14 +1948,14 @@ answerButton.addEventListener(
 
 
         // --------------------------------------------------
-        // BREATHING
+        // LOUD BREATHING FIRST
         // --------------------------------------------------
 
         creepyBreathing();
 
 
         // --------------------------------------------------
-        // REAL RECORDED VOICE
+        // THEN YOUR REAL RECORDING
         // --------------------------------------------------
 
         setTimeout(
